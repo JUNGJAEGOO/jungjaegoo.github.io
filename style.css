@@ -539,6 +539,18 @@ input, select, textarea {
   background: var(--bg-header);
 }
 
+/* ---------- Wide Screen (2560px+) ---------- */
+@media (min-width: 2000px) {
+  .header-inner,
+  .filter-inner,
+  .main-content {
+    max-width: 2400px;
+  }
+  .movie-grid {
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  }
+}
+
 /* ---------- Responsive ---------- */
 @media (max-width: 600px) {
   .header-title h1  { font-size: 1.25rem; }
