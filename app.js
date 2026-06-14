@@ -158,7 +158,7 @@ function createCard(movie) {
         <span class="card-meta-dot"></span>
         <span>${escapeHTML(movie.genre)}</span>
       </p>
-      ${movie.createdAt ? `<p class="card-date">등록일 · ${new Date(movie.createdAt).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}</p>` : ''}
+      ${movie.createdAt ? `<p class="card-date">등록일 · ${new Date(movie.createdAt).toLocaleString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>` : ''}
       <span class="card-genre">${escapeHTML(movie.genre)}</span>
       <div class="card-stars" aria-label="${movie.rating} out of 5 stars">
         ${renderStars(movie.rating)}
