@@ -1,11 +1,9 @@
 /* ============================================================
    REEL THOUGHTS — app.js
-   Handles: localStorage, sample data, add/delete, filter, stars
+   Handles: Supabase data layer, add/edit/delete, filter, stars
    ============================================================ */
 
 'use strict';
-
-const STORAGE_KEY = 'reelthoughts_movies_v4';
 
 /* ---------- State ---------- */
 let movies = [];
@@ -30,25 +28,31 @@ const closeFormBtn  = document.getElementById('closeFormBtn');
 const cancelFormBtn = document.getElementById('cancelFormBtn');
 
 /* ============================================================
-   localStorage helpers
+   DB ↔ App 변환 헬퍼
    ============================================================ */
-function loadMovies() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        return parsed;
-      }
-    }
-  } catch (_) { /* ignore */ }
-  // First visit: seed with samples and persist them
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(SAMPLE_MOVIES));
-  return SAMPLE_MOVIES.map(m => ({ ...m }));
+function dbToMovie(row) {
+  return {
+    id:        row.id,
+    title:     row.mov_name,
+    year:      row.mov_rsl_dt,
+    genre:     row.genre,
+    poster:    row.poster_url || '',
+    rating:    parseFloat(row.rating) || 0,
+    review:    row.comment,
+    createdAt: row.cre_dt,
+    ver:       row.ver,
+  };
 }
 
-function saveMovies() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(movies));
+function movieToDbFields({ title, year, genre, poster, rating, review }) {
+  return {
+    mov_name:   title,
+    mov_rsl_dt: String(year),
+    genre,
+    poster_url: poster,
+    rating:     String(rating),
+    comment:    review,
+  };
 }
 
 /* ============================================================
@@ -104,8 +108,8 @@ function createCard(movie) {
       <p class="card-review">&ldquo;${escapeHTML(movie.review)}&rdquo;</p>
     </div>
     <div class="card-footer">
-      <button class="btn-edit" data-id="${escapeAttr(movie.id)}">&#9999; 수정</button>
-      <button class="btn-delete" data-id="${escapeAttr(movie.id)}">&#128465; 삭제</button>
+      <button class="btn-edit" data-id="${escapeAttr(String(movie.id))}">&#9999; 수정</button>
+      <button class="btn-delete" data-id="${escapeAttr(String(movie.id))}">&#128465; 삭제</button>
     </div>
   `;
 
@@ -146,11 +150,9 @@ function renderGrid() {
 }
 
 function renderFilterChips() {
-  // Collect unique genres from current movie list, preserve insertion order
   const genreSet = new Set();
   movies.forEach(m => genreSet.add(m.genre));
 
-  // Remove old dynamic chips (keep "All")
   while (filterChips.children.length > 1) {
     filterChips.removeChild(filterChips.lastChild);
   }
@@ -163,7 +165,6 @@ function renderFilterChips() {
     filterChips.appendChild(btn);
   });
 
-  // Sync "All" chip active state
   filterChips.children[0].className = 'chip' + (activeGenre === 'All' ? ' active' : '');
 }
 
@@ -260,9 +261,9 @@ starPicker.addEventListener('click', e => {
 });
 
 /* ============================================================
-   Add Movie (form submit)
+   Add / Edit Movie (form submit)
    ============================================================ */
-movieForm.addEventListener('submit', e => {
+movieForm.addEventListener('submit', async e => {
   e.preventDefault();
   formError.textContent = '';
 
@@ -273,24 +274,43 @@ movieForm.addEventListener('submit', e => {
   const rating = parseFloat(ratingInput.value);
   const review = document.getElementById('reviewInput').value.trim();
 
-  // Validation
-  if (!title)               return showError('제목을 입력해주세요.');
+  if (!title)                              return showError('제목을 입력해주세요.');
   if (!year || year < 1888 || year > 2099) return showError('올바른 연도를 입력해주세요 (1888–2099).');
-  if (!genre)               return showError('장르를 선택해주세요.');
-  if (rating < 0.5 || rating > 5) return showError('별점을 선택해주세요.');
-  if (!review)              return showError('한줄평을 입력해주세요.');
+  if (!genre)                              return showError('장르를 선택해주세요.');
+  if (rating < 0.5 || rating > 5)         return showError('별점을 선택해주세요.');
+  if (!review)                             return showError('한줄평을 입력해주세요.');
 
-  if (editingId) {
-    const idx = movies.findIndex(m => m.id === editingId);
-    if (idx !== -1) {
-      movies[idx] = { ...movies[idx], title, year, genre, poster, rating, review };
+  const submitBtn = movieForm.querySelector('[type="submit"]');
+  submitBtn.disabled = true;
+
+  if (editingId !== null) {
+    const movie = movies.find(m => m.id === editingId);
+    const { data, error } = await updateMovie(
+      editingId,
+      movieToDbFields({ title, year, genre, poster, rating, review }),
+      movie.ver
+    );
+    if (error) {
+      showError('수정 중 오류가 발생했습니다: ' + error.message);
+      submitBtn.disabled = false;
+      return;
     }
+    const idx = movies.findIndex(m => m.id === editingId);
+    if (idx !== -1) movies[idx] = dbToMovie(data);
     editingId = null;
   } else {
-    movies.unshift({ id: 'movie-' + Date.now(), title, year, genre, poster, rating, review, createdAt: new Date().toISOString() });
+    const { data, error } = await addMovie(
+      movieToDbFields({ title, year, genre, poster, rating, review })
+    );
+    if (error) {
+      showError('저장 중 오류가 발생했습니다: ' + error.message);
+      submitBtn.disabled = false;
+      return;
+    }
+    movies.unshift(dbToMovie(data));
   }
 
-  saveMovies();
+  submitBtn.disabled = false;
   activeGenre = 'All';
   render();
   closeModal();
@@ -301,11 +321,11 @@ function showError(msg) {
 }
 
 /* ============================================================
-   Delete Movie (event delegation)
+   Delete / Edit Movie (event delegation)
    ============================================================ */
-movieGrid.addEventListener('click', e => {
+movieGrid.addEventListener('click', async e => {
   if (e.target.closest('.btn-edit')) {
-    const id = e.target.closest('.btn-edit').dataset.id;
+    const id = Number(e.target.closest('.btn-edit').dataset.id);
     const movie = movies.find(m => m.id === id);
     if (movie) openEditModal(movie);
     return;
@@ -313,13 +333,18 @@ movieGrid.addEventListener('click', e => {
 
   const btn = e.target.closest('.btn-delete');
   if (!btn) return;
-  const id = btn.dataset.id;
+  const id = Number(btn.dataset.id);
   if (!id) return;
 
-  movies = movies.filter(m => m.id !== id);
-  saveMovies();
+  btn.disabled = true;
+  const { error } = await deleteMovie(id);
+  if (error) {
+    alert('삭제 중 오류가 발생했습니다: ' + error.message);
+    btn.disabled = false;
+    return;
+  }
 
-  // If active genre no longer has any movies, reset to All
+  movies = movies.filter(m => m.id !== id);
   if (activeGenre !== 'All' && !movies.some(m => m.genre === activeGenre)) {
     activeGenre = 'All';
   }
@@ -382,6 +407,17 @@ document.getElementById('sortRating').addEventListener('click', () => {
 /* ============================================================
    Init
    ============================================================ */
-movies = loadMovies();
-updateSortUI();
-render();
+async function initApp() {
+  const { data, error } = await fetchMovies();
+  if (error) {
+    console.error('데이터 로드 오류:', error.message);
+    emptyState.textContent = '데이터를 불러오는 중 오류가 발생했습니다.';
+    emptyState.style.display = 'block';
+    return;
+  }
+  movies = (data || []).map(dbToMovie);
+  updateSortUI();
+  render();
+}
+
+initApp();
