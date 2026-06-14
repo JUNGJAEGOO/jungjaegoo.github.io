@@ -126,16 +126,11 @@ input, select, textarea {
   color: var(--accent-dark);
 }
 
-.btn-sort {
+.btn-sort.active {
   background: var(--bg-page);
-  border-color: var(--accent-light);
-  color: var(--accent-mid);
-}
-
-.btn-sort.primary {
-  border-color: var(--accent-dark);
-  color: var(--accent-deep);
-  font-weight: 700;
+  border-color: var(--accent-mid);
+  color: var(--accent-dark);
+  font-weight: 600;
 }
 
 /* ---------- Filter Bar ---------- */
