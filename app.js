@@ -69,6 +69,7 @@ const STORAGE_KEY = 'reelthoughts_movies';
 let movies = [];
 let activeGenre = 'All';
 let pendingRating = 0;
+let editingId = null;
 
 /* ---------- DOM References ---------- */
 const movieGrid    = document.getElementById('movieGrid');
@@ -154,9 +155,8 @@ function createCard(movie) {
       <p class="card-review">&ldquo;${escapeHTML(movie.review)}&rdquo;</p>
     </div>
     <div class="card-footer">
-      <button class="btn-delete" data-id="${escapeAttr(movie.id)}" aria-label="Delete ${escapeAttr(movie.title)}">
-        &#128465; 삭제
-      </button>
+      <button class="btn-edit" data-id="${escapeAttr(movie.id)}">&#9999; 수정</button>
+      <button class="btn-delete" data-id="${escapeAttr(movie.id)}">&#128465; 삭제</button>
     </div>
   `;
 
@@ -210,10 +210,29 @@ function render() {
    ============================================================ */
 function openModal() {
   movieForm.reset();
+  editingId = null;
   pendingRating = 0;
   ratingInput.value = 0;
   formError.textContent = '';
   updateStarPickerUI(0);
+  document.querySelector('.modal-header h2').textContent = '영화 추가';
+  modalOverlay.classList.add('open');
+  document.getElementById('titleInput').focus();
+}
+
+function openEditModal(movie) {
+  movieForm.reset();
+  editingId = movie.id;
+  pendingRating = movie.rating;
+  ratingInput.value = movie.rating;
+  formError.textContent = '';
+  document.getElementById('titleInput').value = movie.title;
+  document.getElementById('yearInput').value = movie.year;
+  document.getElementById('genreInput').value = movie.genre;
+  document.getElementById('posterInput').value = movie.poster || '';
+  document.getElementById('reviewInput').value = movie.review;
+  updateStarPickerUI(0);
+  document.querySelector('.modal-header h2').textContent = '영화 수정';
   modalOverlay.classList.add('open');
   document.getElementById('titleInput').focus();
 }
@@ -286,19 +305,18 @@ movieForm.addEventListener('submit', e => {
   if (rating < 1 || rating > 5) return showError('별점을 선택해주세요.');
   if (!review)              return showError('한줄평을 입력해주세요.');
 
-  const newMovie = {
-    id: 'movie-' + Date.now(),
-    title,
-    year,
-    genre,
-    poster,
-    rating,
-    review
-  };
+  if (editingId) {
+    const idx = movies.findIndex(m => m.id === editingId);
+    if (idx !== -1) {
+      movies[idx] = { ...movies[idx], title, year, genre, poster, rating, review };
+    }
+    editingId = null;
+  } else {
+    movies.unshift({ id: 'movie-' + Date.now(), title, year, genre, poster, rating, review });
+  }
 
-  movies.unshift(newMovie);
   saveMovies();
-  activeGenre = 'All'; // reset filter so new movie is visible
+  activeGenre = 'All';
   render();
   closeModal();
 });
@@ -311,6 +329,13 @@ function showError(msg) {
    Delete Movie (event delegation)
    ============================================================ */
 movieGrid.addEventListener('click', e => {
+  if (e.target.closest('.btn-edit')) {
+    const id = e.target.closest('.btn-edit').dataset.id;
+    const movie = movies.find(m => m.id === id);
+    if (movie) openEditModal(movie);
+    return;
+  }
+
   const btn = e.target.closest('.btn-delete');
   if (!btn) return;
   const id = btn.dataset.id;

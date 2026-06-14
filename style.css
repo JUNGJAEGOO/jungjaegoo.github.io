@@ -286,18 +286,32 @@ input, select, textarea {
   padding: 0.6rem 1rem;
   border-top: 1px solid var(--border);
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  gap: 0.5rem;
 }
 
+.btn-edit,
 .btn-delete {
   background: none;
   border: none;
-  color: var(--text-light);
   font-size: 0.78rem;
   padding: 0.2rem 0.4rem;
   border-radius: var(--radius-sm);
   transition: color var(--transition), background var(--transition);
   font-family: 'Georgia', serif;
+}
+
+.btn-edit {
+  color: var(--accent-mid);
+}
+
+.btn-edit:hover {
+  color: var(--accent-deep);
+  background: var(--bg-header);
+}
+
+.btn-delete {
+  color: var(--text-light);
 }
 
 .btn-delete:hover {
