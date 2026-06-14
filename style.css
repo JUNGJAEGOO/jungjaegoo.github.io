@@ -273,6 +273,12 @@ input, select, textarea {
 
 .card-stars .s-on  { color: var(--star-on); }
 .card-stars .s-off { color: var(--star-off); }
+.card-stars .s-half {
+  background: linear-gradient(to right, var(--star-on) 50%, var(--star-off) 50%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
 
 .card-review {
   font-size: 0.87rem;
@@ -481,15 +487,23 @@ input, select, textarea {
   font-size: 1.8rem;
   color: var(--star-off);
   cursor: pointer;
-  transition: color var(--transition), transform var(--transition);
+  transition: transform var(--transition);
   line-height: 1;
   user-select: none;
 }
 
-.star-pick:hover,
 .star-pick.hovered,
 .star-pick.selected {
   color: var(--star-on);
+  transform: scale(1.15);
+}
+
+.star-pick.half-hovered,
+.star-pick.half-selected {
+  background: linear-gradient(to right, var(--star-on) 50%, var(--star-off) 50%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
   transform: scale(1.15);
 }
 

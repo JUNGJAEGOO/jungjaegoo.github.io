@@ -113,9 +113,13 @@ function saveMovies() {
 function renderStars(rating) {
   let html = '';
   for (let i = 1; i <= 5; i++) {
-    html += i <= rating
-      ? '<span class="s-on">&#9733;</span>'
-      : '<span class="s-off">&#9734;</span>';
+    if (rating >= i) {
+      html += '<span class="s-on">&#9733;</span>';
+    } else if (rating >= i - 0.5) {
+      html += '<span class="s-half">&#9733;</span>';
+    } else {
+      html += '<span class="s-off">&#9734;</span>';
+    }
   }
   return html;
 }
@@ -256,20 +260,31 @@ document.addEventListener('keydown', e => {
    ============================================================ */
 function updateStarPickerUI(hoverValue) {
   const stars = starPicker.querySelectorAll('.star-pick');
+  const activeValue = hoverValue > 0 ? hoverValue : pendingRating;
+  const isHover = hoverValue > 0;
+
   stars.forEach(s => {
     const v = parseInt(s.dataset.value, 10);
-    s.classList.remove('hovered', 'selected');
-    if (hoverValue > 0) {
-      if (v <= hoverValue) s.classList.add('hovered');
-    } else {
-      if (v <= pendingRating) s.classList.add('selected');
+    s.classList.remove('hovered', 'selected', 'half-hovered', 'half-selected');
+    if (activeValue >= v) {
+      s.classList.add(isHover ? 'hovered' : 'selected');
+    } else if (activeValue >= v - 0.5) {
+      s.classList.add(isHover ? 'half-hovered' : 'half-selected');
     }
   });
 }
 
-starPicker.addEventListener('mousemove', e => {
+function getStarHalfValue(e) {
   const star = e.target.closest('.star-pick');
-  if (star) updateStarPickerUI(parseInt(star.dataset.value, 10));
+  if (!star) return null;
+  const rect = star.getBoundingClientRect();
+  const isLeft = (e.clientX - rect.left) < rect.width / 2;
+  return parseInt(star.dataset.value, 10) - (isLeft ? 0.5 : 0);
+}
+
+starPicker.addEventListener('mousemove', e => {
+  const val = getStarHalfValue(e);
+  if (val !== null) updateStarPickerUI(val);
 });
 
 starPicker.addEventListener('mouseleave', () => {
@@ -277,10 +292,10 @@ starPicker.addEventListener('mouseleave', () => {
 });
 
 starPicker.addEventListener('click', e => {
-  const star = e.target.closest('.star-pick');
-  if (!star) return;
-  pendingRating = parseInt(star.dataset.value, 10);
-  ratingInput.value = pendingRating;
+  const val = getStarHalfValue(e);
+  if (val === null) return;
+  pendingRating = val;
+  ratingInput.value = val;
   updateStarPickerUI(0);
 });
 
@@ -295,14 +310,14 @@ movieForm.addEventListener('submit', e => {
   const year   = parseInt(document.getElementById('yearInput').value, 10);
   const genre  = document.getElementById('genreInput').value;
   const poster = document.getElementById('posterInput').value.trim();
-  const rating = parseInt(ratingInput.value, 10);
+  const rating = parseFloat(ratingInput.value);
   const review = document.getElementById('reviewInput').value.trim();
 
   // Validation
   if (!title)               return showError('제목을 입력해주세요.');
   if (!year || year < 1888 || year > 2099) return showError('올바른 연도를 입력해주세요 (1888–2099).');
   if (!genre)               return showError('장르를 선택해주세요.');
-  if (rating < 1 || rating > 5) return showError('별점을 선택해주세요.');
+  if (rating < 0.5 || rating > 5) return showError('별점을 선택해주세요.');
   if (!review)              return showError('한줄평을 입력해주세요.');
 
   if (editingId) {
