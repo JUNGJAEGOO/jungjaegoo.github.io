@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Reel Thoughts &mdash; My Movie Journal</title>
+  <title>Reel Thoughts &mdash; 나의 영화 기록장</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -15,19 +15,19 @@
         <span class="header-icon">&#127909;</span>
         <div>
           <h1>Reel Thoughts</h1>
-          <p class="header-sub">A personal cinema journal</p>
+          <p class="header-sub">나만의 영화 기록장</p>
         </div>
       </div>
-      <button class="btn-primary" id="openFormBtn">+ Add Movie</button>
+      <button class="btn-primary" id="openFormBtn">+ 영화 추가</button>
     </div>
   </header>
 
   <!-- Filter Bar -->
   <section class="filter-bar">
     <div class="filter-inner">
-      <span class="filter-label">Filter by genre:</span>
+      <span class="filter-label">장르별 보기:</span>
       <div class="filter-chips" id="filterChips">
-        <button class="chip active" data-genre="All">All</button>
+        <button class="chip active" data-genre="All">전체</button>
       </div>
     </div>
   </section>
@@ -38,7 +38,7 @@
       <!-- Cards injected by JS -->
     </div>
     <p class="empty-state" id="emptyState" style="display:none;">
-      No movies found. Add your first one!
+      등록된 영화가 없어요. 첫 번째 영화를 추가해보세요!
     </p>
   </main>
 
@@ -46,48 +46,48 @@
   <div class="modal-overlay" id="modalOverlay">
     <div class="modal">
       <div class="modal-header">
-        <h2>Add a Movie</h2>
+        <h2>영화 추가</h2>
         <button class="modal-close" id="closeFormBtn" aria-label="Close">&times;</button>
       </div>
       <form id="movieForm" novalidate>
 
         <div class="form-group">
-          <label for="titleInput">Title <span class="req">*</span></label>
-          <input type="text" id="titleInput" placeholder="e.g. Parasite" required />
+          <label for="titleInput">제목 <span class="req">*</span></label>
+          <input type="text" id="titleInput" placeholder="예: 기생충" required />
         </div>
 
         <div class="form-row">
           <div class="form-group">
-            <label for="yearInput">Year <span class="req">*</span></label>
+            <label for="yearInput">연도 <span class="req">*</span></label>
             <input type="number" id="yearInput" placeholder="2024" min="1888" max="2099" required />
           </div>
           <div class="form-group">
-            <label for="genreInput">Genre <span class="req">*</span></label>
+            <label for="genreInput">장르 <span class="req">*</span></label>
             <select id="genreInput" required>
-              <option value="">Select genre</option>
-              <option>Drama</option>
-              <option>Comedy</option>
-              <option>Thriller</option>
-              <option>Horror</option>
-              <option>Romance</option>
-              <option>Action</option>
-              <option>Sci-Fi</option>
-              <option>Animation</option>
-              <option>Documentary</option>
-              <option>Mystery</option>
-              <option>Fantasy</option>
-              <option>Other</option>
+              <option value="">장르 선택</option>
+              <option>드라마</option>
+              <option>코미디</option>
+              <option>스릴러</option>
+              <option>호러</option>
+              <option>로맨스</option>
+              <option>액션</option>
+              <option>SF</option>
+              <option>애니메이션</option>
+              <option>다큐멘터리</option>
+              <option>미스터리</option>
+              <option>판타지</option>
+              <option>기타</option>
             </select>
           </div>
         </div>
 
         <div class="form-group">
-          <label for="posterInput">Poster URL <span class="optional">(optional)</span></label>
+          <label for="posterInput">포스터 URL <span class="optional">(선택)</span></label>
           <input type="url" id="posterInput" placeholder="https://..." />
         </div>
 
         <div class="form-group">
-          <label>Your Rating <span class="req">*</span></label>
+          <label>별점 <span class="req">*</span></label>
           <div class="star-picker" id="starPicker" role="group" aria-label="Star rating">
             <span class="star-pick" data-value="1">&#9733;</span>
             <span class="star-pick" data-value="2">&#9733;</span>
@@ -99,22 +99,22 @@
         </div>
 
         <div class="form-group">
-          <label for="reviewInput">Short Review <span class="req">*</span></label>
-          <textarea id="reviewInput" rows="3" placeholder="What did you think?" required></textarea>
+          <label for="reviewInput">한줄평 <span class="req">*</span></label>
+          <textarea id="reviewInput" rows="3" placeholder="영화 감상을 짧게 적어주세요" required></textarea>
         </div>
 
         <p class="form-error" id="formError"></p>
 
         <div class="form-actions">
-          <button type="button" class="btn-ghost" id="cancelFormBtn">Cancel</button>
-          <button type="submit" class="btn-primary">Save Movie</button>
+          <button type="button" class="btn-ghost" id="cancelFormBtn">취소</button>
+          <button type="submit" class="btn-primary">저장</button>
         </div>
       </form>
     </div>
   </div>
 
   <footer class="site-footer">
-    <p>Reel Thoughts &mdash; a cozy corner for cinema lovers</p>
+    <p>Reel Thoughts &mdash; 영화를 사랑하는 이들의 아늑한 공간</p>
   </footer>
 
   <script src="app.js"></script>

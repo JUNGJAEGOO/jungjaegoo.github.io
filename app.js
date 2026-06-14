@@ -9,57 +9,57 @@
 const SAMPLE_MOVIES = [
   {
     id: 'sample-1',
-    title: 'Amélie',
+    title: '아멜리에',
     year: 2001,
-    genre: 'Romance',
+    genre: '로맨스',
     poster: 'https://upload.wikimedia.org/wikipedia/en/5/53/Amelie_poster.jpg',
     rating: 5,
-    review: 'A whimsical, visually intoxicating fairy tale set in Montmartre. Audrey Tautou is absolutely enchanting.'
+    review: '몽마르트르를 배경으로 한 몽환적이고 아름다운 동화. 오드리 토투의 매력이 스크린을 가득 채운다.'
   },
   {
     id: 'sample-2',
-    title: 'Parasite',
+    title: '기생충',
     year: 2019,
-    genre: 'Thriller',
+    genre: '스릴러',
     poster: 'https://upload.wikimedia.org/wikipedia/en/5/53/Parasite_%282019_film%29.png',
     rating: 5,
-    review: 'Bong Joon-ho crafts a razor-sharp class satire that pivots without warning into something truly unforgettable.'
+    review: '봉준호 감독의 날카로운 계급 풍자극. 예측 불가능한 전개와 완벽한 연출로 오랫동안 머릿속에 남는 작품.'
   },
   {
     id: 'sample-3',
-    title: 'Coco',
+    title: '코코',
     year: 2017,
-    genre: 'Animation',
+    genre: '애니메이션',
     poster: 'https://upload.wikimedia.org/wikipedia/en/9/98/Coco_%282017_film%29_poster.jpg',
     rating: 4,
-    review: 'Pixar at its most vibrant — a celebration of family, memory, and the music that outlives us all. Brought me to tears.'
+    review: '가족, 기억, 그리고 음악에 대한 픽사의 가장 따뜻한 찬가. 엔딩에서 눈물을 참기 어렵다.'
   },
   {
     id: 'sample-4',
-    title: 'Before Sunset',
+    title: '비포 선셋',
     year: 2004,
-    genre: 'Romance',
+    genre: '로맨스',
     poster: '',
     rating: 5,
-    review: 'Two people, one afternoon in Paris, a decade of unspoken feeling. Linklater makes conversation feel cinematic.'
+    review: '파리의 오후, 두 사람, 10년의 감정. 링클레이터는 대화만으로 영화적 감동을 만들어낸다.'
   },
   {
     id: 'sample-5',
-    title: 'Knives Out',
+    title: '나이브스 아웃',
     year: 2019,
-    genre: 'Mystery',
+    genre: '미스터리',
     poster: '',
     rating: 4,
-    review: 'A fiendishly clever whodunit that keeps flipping its own rules. Daniel Craig is a revelation as Benoit Blanc.'
+    review: '자기 규칙을 스스로 뒤집는 기발한 추리극. 다니엘 크레이그의 탐정 연기가 신선하고 유쾌하다.'
   },
   {
     id: 'sample-6',
-    title: 'Portrait of a Lady on Fire',
+    title: '타오르는 여인의 초상',
     year: 2019,
-    genre: 'Drama',
+    genre: '드라마',
     poster: '',
     rating: 5,
-    review: 'Quietly devastating. Every frame is a painting, every glance a confession. Céline Sciamma at her finest.'
+    review: '모든 프레임이 그림이고, 모든 눈빛이 고백이다. 셀린 시아마의 조용하고 강렬한 걸작.'
   }
 ];
 
@@ -131,11 +131,11 @@ function createCard(movie) {
             onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
        <div class="card-poster-placeholder" style="display:none;">
          <span>&#127909;</span>
-         <span class="placeholder-label">No image</span>
+         <span class="placeholder-label">이미지 없음</span>
        </div>`
     : `<div class="card-poster-placeholder">
          <span>&#127909;</span>
-         <span class="placeholder-label">No image</span>
+         <span class="placeholder-label">이미지 없음</span>
        </div>`;
 
   card.innerHTML = `
@@ -155,7 +155,7 @@ function createCard(movie) {
     </div>
     <div class="card-footer">
       <button class="btn-delete" data-id="${escapeAttr(movie.id)}" aria-label="Delete ${escapeAttr(movie.title)}">
-        &#128465; Remove
+        &#128465; 삭제
       </button>
     </div>
   `;
@@ -280,11 +280,11 @@ movieForm.addEventListener('submit', e => {
   const review = document.getElementById('reviewInput').value.trim();
 
   // Validation
-  if (!title)               return showError('Please enter a title.');
-  if (!year || year < 1888 || year > 2099) return showError('Please enter a valid year (1888–2099).');
-  if (!genre)               return showError('Please select a genre.');
-  if (rating < 1 || rating > 5) return showError('Please select a star rating (1–5).');
-  if (!review)              return showError('Please write a short review.');
+  if (!title)               return showError('제목을 입력해주세요.');
+  if (!year || year < 1888 || year > 2099) return showError('올바른 연도를 입력해주세요 (1888–2099).');
+  if (!genre)               return showError('장르를 선택해주세요.');
+  if (rating < 1 || rating > 5) return showError('별점을 선택해주세요.');
+  if (!review)              return showError('한줄평을 입력해주세요.');
 
   const newMovie = {
     id: 'movie-' + Date.now(),
