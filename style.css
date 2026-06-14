@@ -196,7 +196,7 @@ input, select, textarea {
 
 .movie-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 1.5rem;
 }
 
@@ -568,18 +568,6 @@ input, select, textarea {
   border-top: 1px solid var(--border);
   font-style: italic;
   background: var(--bg-header);
-}
-
-/* ---------- Wide Screen (2560px+) ---------- */
-@media (min-width: 2000px) {
-  .header-inner,
-  .filter-inner,
-  .main-content {
-    max-width: 2400px;
-  }
-  .movie-grid {
-    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-  }
 }
 
 /* ---------- Responsive ---------- */
