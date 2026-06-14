@@ -14,7 +14,8 @@ const SAMPLE_MOVIES = [
     genre: '로맨스',
     poster: 'https://upload.wikimedia.org/wikipedia/en/5/53/Amelie_poster.jpg',
     rating: 5,
-    review: '몽마르트르를 배경으로 한 몽환적이고 아름다운 동화. 오드리 토투의 매력이 스크린을 가득 채운다.'
+    review: '몽마르트르를 배경으로 한 몽환적이고 아름다운 동화. 오드리 토투의 매력이 스크린을 가득 채운다.',
+    createdAt: '2026-06-01T10:00:00.000Z'
   },
   {
     id: 'sample-2',
@@ -23,7 +24,8 @@ const SAMPLE_MOVIES = [
     genre: '스릴러',
     poster: 'https://upload.wikimedia.org/wikipedia/en/5/53/Parasite_%282019_film%29.png',
     rating: 5,
-    review: '봉준호 감독의 날카로운 계급 풍자극. 예측 불가능한 전개와 완벽한 연출로 오랫동안 머릿속에 남는 작품.'
+    review: '봉준호 감독의 날카로운 계급 풍자극. 예측 불가능한 전개와 완벽한 연출로 오랫동안 머릿속에 남는 작품.',
+    createdAt: '2026-06-03T10:00:00.000Z'
   },
   {
     id: 'sample-3',
@@ -32,7 +34,8 @@ const SAMPLE_MOVIES = [
     genre: '애니메이션',
     poster: 'https://upload.wikimedia.org/wikipedia/en/9/98/Coco_%282017_film%29_poster.jpg',
     rating: 4,
-    review: '가족, 기억, 그리고 음악에 대한 픽사의 가장 따뜻한 찬가. 엔딩에서 눈물을 참기 어렵다.'
+    review: '가족, 기억, 그리고 음악에 대한 픽사의 가장 따뜻한 찬가. 엔딩에서 눈물을 참기 어렵다.',
+    createdAt: '2026-06-05T10:00:00.000Z'
   },
   {
     id: 'sample-4',
@@ -41,7 +44,8 @@ const SAMPLE_MOVIES = [
     genre: '로맨스',
     poster: '',
     rating: 5,
-    review: '파리의 오후, 두 사람, 10년의 감정. 링클레이터는 대화만으로 영화적 감동을 만들어낸다.'
+    review: '파리의 오후, 두 사람, 10년의 감정. 링클레이터는 대화만으로 영화적 감동을 만들어낸다.',
+    createdAt: '2026-06-07T10:00:00.000Z'
   },
   {
     id: 'sample-5',
@@ -50,7 +54,8 @@ const SAMPLE_MOVIES = [
     genre: '미스터리',
     poster: '',
     rating: 4,
-    review: '자기 규칙을 스스로 뒤집는 기발한 추리극. 다니엘 크레이그의 탐정 연기가 신선하고 유쾌하다.'
+    review: '자기 규칙을 스스로 뒤집는 기발한 추리극. 다니엘 크레이그의 탐정 연기가 신선하고 유쾌하다.',
+    createdAt: '2026-06-09T10:00:00.000Z'
   },
   {
     id: 'sample-6',
@@ -59,11 +64,12 @@ const SAMPLE_MOVIES = [
     genre: '드라마',
     poster: '',
     rating: 5,
-    review: '모든 프레임이 그림이고, 모든 눈빛이 고백이다. 셀린 시아마의 조용하고 강렬한 걸작.'
+    review: '모든 프레임이 그림이고, 모든 눈빛이 고백이다. 셀린 시아마의 조용하고 강렬한 걸작.',
+    createdAt: '2026-06-11T10:00:00.000Z'
   }
 ];
 
-const STORAGE_KEY = 'reelthoughts_movies_v2';
+const STORAGE_KEY = 'reelthoughts_movies_v3';
 
 /* ---------- State ---------- */
 let movies = [];
@@ -152,6 +158,7 @@ function createCard(movie) {
         <span class="card-meta-dot"></span>
         <span>${escapeHTML(movie.genre)}</span>
       </p>
+      ${movie.createdAt ? `<p class="card-date">등록일 · ${new Date(movie.createdAt).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}</p>` : ''}
       <span class="card-genre">${escapeHTML(movie.genre)}</span>
       <div class="card-stars" aria-label="${movie.rating} out of 5 stars">
         ${renderStars(movie.rating)}
@@ -327,7 +334,7 @@ movieForm.addEventListener('submit', e => {
     }
     editingId = null;
   } else {
-    movies.unshift({ id: 'movie-' + Date.now(), title, year, genre, poster, rating, review });
+    movies.unshift({ id: 'movie-' + Date.now(), title, year, genre, poster, rating, review, createdAt: new Date().toISOString() });
   }
 
   saveMovies();
