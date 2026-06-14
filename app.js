@@ -76,6 +76,8 @@ let movies = [];
 let activeGenre = 'All';
 let pendingRating = 0;
 let editingId = null;
+let sortKey = 'createdAt';
+let sortDir = 'desc';
 
 /* ---------- DOM References ---------- */
 const movieGrid    = document.getElementById('movieGrid');
@@ -174,18 +176,36 @@ function createCard(movie) {
   return card;
 }
 
+function getSorted(list) {
+  return [...list].sort((a, b) => {
+    const valA = sortKey === 'rating' ? a.rating : new Date(a.createdAt || 0).getTime();
+    const valB = sortKey === 'rating' ? b.rating : new Date(b.createdAt || 0).getTime();
+    return sortDir === 'desc' ? valB - valA : valA - valB;
+  });
+}
+
+function updateSortUI() {
+  const dateBtn   = document.getElementById('sortDate');
+  const ratingBtn = document.getElementById('sortRating');
+  dateBtn.classList.toggle('active', sortKey === 'createdAt');
+  ratingBtn.classList.toggle('active', sortKey === 'rating');
+  dateBtn.textContent   = '날짜순 ' + (sortKey === 'createdAt' ? (sortDir === 'desc' ? '↓' : '↑') : '↓');
+  ratingBtn.textContent = '별점순 ' + (sortKey === 'rating'    ? (sortDir === 'desc' ? '↓' : '↑') : '↓');
+}
+
 function renderGrid() {
   const filtered = activeGenre === 'All'
     ? movies
     : movies.filter(m => m.genre === activeGenre);
 
+  const sorted = getSorted(filtered);
   movieGrid.innerHTML = '';
 
-  if (filtered.length === 0) {
+  if (sorted.length === 0) {
     emptyState.style.display = 'block';
   } else {
     emptyState.style.display = 'none';
-    filtered.forEach(m => movieGrid.appendChild(createCard(m)));
+    sorted.forEach(m => movieGrid.appendChild(createCard(m)));
   }
 }
 
@@ -402,7 +422,33 @@ function escapeAttr(str) {
 }
 
 /* ============================================================
+   Sort
+   ============================================================ */
+document.getElementById('sortDate').addEventListener('click', () => {
+  if (sortKey === 'createdAt') {
+    sortDir = sortDir === 'desc' ? 'asc' : 'desc';
+  } else {
+    sortKey = 'createdAt';
+    sortDir = 'desc';
+  }
+  updateSortUI();
+  render();
+});
+
+document.getElementById('sortRating').addEventListener('click', () => {
+  if (sortKey === 'rating') {
+    sortDir = sortDir === 'desc' ? 'asc' : 'desc';
+  } else {
+    sortKey = 'rating';
+    sortDir = 'desc';
+  }
+  updateSortUI();
+  render();
+});
+
+/* ============================================================
    Init
    ============================================================ */
 movies = loadMovies();
+updateSortUI();
 render();
