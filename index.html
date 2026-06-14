@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reel Thoughts &mdash; My Movie Journal</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="header-title">
+        <span class="header-icon">&#127909;</span>
+        <div>
+          <h1>Reel Thoughts</h1>
+          <p class="header-sub">A personal cinema journal</p>
+        </div>
+      </div>
+      <button class="btn-primary" id="openFormBtn">+ Add Movie</button>
+    </div>
+  </header>
+
+  <!-- Filter Bar -->
+  <section class="filter-bar">
+    <div class="filter-inner">
+      <span class="filter-label">Filter by genre:</span>
+      <div class="filter-chips" id="filterChips">
+        <button class="chip active" data-genre="All">All</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Movie Grid -->
+  <main class="main-content">
+    <div class="movie-grid" id="movieGrid">
+      <!-- Cards injected by JS -->
+    </div>
+    <p class="empty-state" id="emptyState" style="display:none;">
+      No movies found. Add your first one!
+    </p>
+  </main>
+
+  <!-- Add Movie Modal -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Add a Movie</h2>
+        <button class="modal-close" id="closeFormBtn" aria-label="Close">&times;</button>
+      </div>
+      <form id="movieForm" novalidate>
+
+        <div class="form-group">
+          <label for="titleInput">Title <span class="req">*</span></label>
+          <input type="text" id="titleInput" placeholder="e.g. Parasite" required />
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="yearInput">Year <span class="req">*</span></label>
+            <input type="number" id="yearInput" placeholder="2024" min="1888" max="2099" required />
+          </div>
+          <div class="form-group">
+            <label for="genreInput">Genre <span class="req">*</span></label>
+            <select id="genreInput" required>
+              <option value="">Select genre</option>
+              <option>Drama</option>
+              <option>Comedy</option>
+              <option>Thriller</option>
+              <option>Horror</option>
+              <option>Romance</option>
+              <option>Action</option>
+              <option>Sci-Fi</option>
+              <option>Animation</option>
+              <option>Documentary</option>
+              <option>Mystery</option>
+              <option>Fantasy</option>
+              <option>Other</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="posterInput">Poster URL <span class="optional">(optional)</span></label>
+          <input type="url" id="posterInput" placeholder="https://..." />
+        </div>
+
+        <div class="form-group">
+          <label>Your Rating <span class="req">*</span></label>
+          <div class="star-picker" id="starPicker" role="group" aria-label="Star rating">
+            <span class="star-pick" data-value="1">&#9733;</span>
+            <span class="star-pick" data-value="2">&#9733;</span>
+            <span class="star-pick" data-value="3">&#9733;</span>
+            <span class="star-pick" data-value="4">&#9733;</span>
+            <span class="star-pick" data-value="5">&#9733;</span>
+          </div>
+          <input type="hidden" id="ratingInput" value="0" />
+        </div>
+
+        <div class="form-group">
+          <label for="reviewInput">Short Review <span class="req">*</span></label>
+          <textarea id="reviewInput" rows="3" placeholder="What did you think?" required></textarea>
+        </div>
+
+        <p class="form-error" id="formError"></p>
+
+        <div class="form-actions">
+          <button type="button" class="btn-ghost" id="cancelFormBtn">Cancel</button>
+          <button type="submit" class="btn-primary">Save Movie</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <p>Reel Thoughts &mdash; a cozy corner for cinema lovers</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
