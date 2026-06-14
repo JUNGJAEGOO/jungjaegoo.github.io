@@ -63,7 +63,7 @@ const SAMPLE_MOVIES = [
   }
 ];
 
-const STORAGE_KEY = 'reelthoughts_movies';
+const STORAGE_KEY = 'reelthoughts_movies_v2';
 
 /* ---------- State ---------- */
 let movies = [];
