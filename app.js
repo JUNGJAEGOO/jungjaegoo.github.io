@@ -23,9 +23,13 @@ const starPicker   = document.getElementById('starPicker');
 const ratingInput  = document.getElementById('ratingInput');
 const formError    = document.getElementById('formError');
 
-const openFormBtn   = document.getElementById('openFormBtn');
-const closeFormBtn  = document.getElementById('closeFormBtn');
-const cancelFormBtn = document.getElementById('cancelFormBtn');
+const openFormBtn    = document.getElementById('openFormBtn');
+const closeFormBtn   = document.getElementById('closeFormBtn');
+const cancelFormBtn  = document.getElementById('cancelFormBtn');
+const detailOverlay  = document.getElementById('detailOverlay');
+const detailBody     = document.getElementById('detailBody');
+const detailTitle    = document.getElementById('detailTitle');
+const closeDetailBtn = document.getElementById('closeDetailBtn');
 
 /* ============================================================
    DB ↔ App 변환 헬퍼
@@ -96,16 +100,13 @@ function createCard(movie) {
     <div class="card-body">
       <h3 class="card-title">${escapeHTML(movie.title)}</h3>
       <p class="card-meta">
-        <span>${escapeHTML(String(movie.year))}</span>
-        <span class="card-meta-dot"></span>
-        <span>${escapeHTML(movie.genre)}</span>
+        <span>개봉년도 : ${escapeHTML(String(movie.year))}</span>
       </p>
-      ${movie.createdAt ? `<p class="card-date">등록일 · ${new Date(movie.createdAt).toLocaleString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false })}</p>` : ''}
-      <span class="card-genre">${escapeHTML(movie.genre)}</span>
+      ${movie.createdAt ? `<p class="card-date">등록 : ${new Date(movie.createdAt).toLocaleString('ko-KR', { year: '2-digit', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false })}</p>` : ''}
+      <div class="card-genres">${(movie.genre || '').split('|').filter(Boolean).map(g => `<span class="card-genre">${escapeHTML(g)}</span>`).join('')}</div>
       <div class="card-stars" aria-label="${movie.rating} out of 5 stars">
         ${renderStars(movie.rating)}
       </div>
-      <p class="card-review">&ldquo;${escapeHTML(movie.review)}&rdquo;</p>
     </div>
     <div class="card-footer">
       <button class="btn-edit" data-id="${escapeAttr(String(movie.id))}">&#9999; 수정</button>
@@ -136,7 +137,7 @@ function updateSortUI() {
 function renderGrid() {
   const filtered = activeGenre === 'All'
     ? movies
-    : movies.filter(m => m.genre === activeGenre);
+    : movies.filter(m => m.genre && m.genre.split('|').includes(activeGenre));
 
   const sorted = getSorted(filtered);
   movieGrid.innerHTML = '';
@@ -151,7 +152,7 @@ function renderGrid() {
 
 function renderFilterChips() {
   const genreSet = new Set();
-  movies.forEach(m => genreSet.add(m.genre));
+  movies.forEach(m => { if (m.genre) m.genre.split('|').forEach(g => g && genreSet.add(g)); });
 
   while (filterChips.children.length > 1) {
     filterChips.removeChild(filterChips.lastChild);
@@ -196,7 +197,10 @@ function openEditModal(movie) {
   formError.textContent = '';
   document.getElementById('titleInput').value = movie.title;
   document.getElementById('yearInput').value = movie.year;
-  document.getElementById('genreInput').value = movie.genre;
+  const selectedGenres = movie.genre ? movie.genre.split('|') : [];
+  document.querySelectorAll('#genreCheckboxes input[type="checkbox"]').forEach(cb => {
+    cb.checked = selectedGenres.includes(cb.value);
+  });
   document.getElementById('posterInput').value = movie.poster || '';
   document.getElementById('reviewInput').value = movie.review;
   updateStarPickerUI(0);
@@ -213,7 +217,10 @@ openFormBtn.addEventListener('click', openModal);
 closeFormBtn.addEventListener('click', closeModal);
 cancelFormBtn.addEventListener('click', closeModal);
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape' && modalOverlay.classList.contains('open')) closeModal();
+  if (e.key === 'Escape') {
+    if (modalOverlay.classList.contains('open')) closeModal();
+    if (detailOverlay.classList.contains('open')) closeDetailModal();
+  }
 });
 
 /* ============================================================
@@ -269,14 +276,14 @@ movieForm.addEventListener('submit', async e => {
 
   const title  = document.getElementById('titleInput').value.trim();
   const year   = parseInt(document.getElementById('yearInput').value, 10);
-  const genre  = document.getElementById('genreInput').value;
+  const genre  = [...document.querySelectorAll('#genreCheckboxes input:checked')].map(cb => cb.value).join('|');
   const poster = document.getElementById('posterInput').value.trim();
   const rating = parseFloat(ratingInput.value);
   const review = document.getElementById('reviewInput').value.trim();
 
   if (!title)                              return showError('제목을 입력해주세요.');
   if (!year || year < 1888 || year > 2099) return showError('올바른 연도를 입력해주세요 (1888–2099).');
-  if (!genre)                              return showError('장르를 선택해주세요.');
+  if (!genre)                              return showError('장르를 하나 이상 선택해주세요.');
   if (rating < 0.5 || rating > 5)         return showError('별점을 선택해주세요.');
   if (!review)                             return showError('한줄평을 입력해주세요.');
 
@@ -321,6 +328,44 @@ function showError(msg) {
 }
 
 /* ============================================================
+   Detail Modal (read-only view)
+   ============================================================ */
+function openDetailModal(movie) {
+  detailTitle.textContent = movie.title;
+
+  const posterHTML = movie.poster
+    ? `<img class="detail-poster" src="${escapeAttr(movie.poster)}"
+            alt="${escapeAttr(movie.title)} poster"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+       <div class="detail-poster-placeholder" style="display:none;"><span>&#127909;</span></div>`
+    : `<div class="detail-poster-placeholder"><span>&#127909;</span></div>`;
+
+  const detailGenresHTML = (movie.genre || '').split('|').filter(Boolean)
+    .map(g => `<span class="card-genre">${escapeHTML(g)}</span>`).join('');
+
+  detailBody.innerHTML = `
+    <div class="detail-poster-wrap">${posterHTML}</div>
+    <div class="detail-info">
+      <p class="detail-meta"><span>개봉년도 : ${escapeHTML(String(movie.year))}</span></p>
+      <div class="detail-genres">${detailGenresHTML}</div>
+      <div class="detail-stars" aria-label="${movie.rating} out of 5 stars">
+        ${renderStars(movie.rating)}
+        <span class="detail-rating-num">${movie.rating}</span>
+      </div>
+      <p class="detail-review">&ldquo;${escapeHTML(movie.review)}&rdquo;</p>
+    </div>
+  `;
+
+  detailOverlay.classList.add('open');
+}
+
+function closeDetailModal() {
+  detailOverlay.classList.remove('open');
+}
+
+closeDetailBtn.addEventListener('click', closeDetailModal);
+
+/* ============================================================
    Delete / Edit Movie (event delegation)
    ============================================================ */
 movieGrid.addEventListener('click', async e => {
@@ -331,24 +376,31 @@ movieGrid.addEventListener('click', async e => {
     return;
   }
 
-  const btn = e.target.closest('.btn-delete');
-  if (!btn) return;
-  const id = Number(btn.dataset.id);
-  if (!id) return;
-
-  btn.disabled = true;
-  const { error } = await deleteMovie(id);
-  if (error) {
-    alert('삭제 중 오류가 발생했습니다: ' + error.message);
-    btn.disabled = false;
+  if (e.target.closest('.btn-delete')) {
+    const btn = e.target.closest('.btn-delete');
+    const id = Number(btn.dataset.id);
+    if (!id) return;
+    btn.disabled = true;
+    const { error } = await deleteMovie(id);
+    if (error) {
+      alert('삭제 중 오류가 발생했습니다: ' + error.message);
+      btn.disabled = false;
+      return;
+    }
+    movies = movies.filter(m => m.id !== id);
+    if (activeGenre !== 'All' && !movies.some(m => m.genre === activeGenre)) {
+      activeGenre = 'All';
+    }
+    render();
     return;
   }
 
-  movies = movies.filter(m => m.id !== id);
-  if (activeGenre !== 'All' && !movies.some(m => m.genre === activeGenre)) {
-    activeGenre = 'All';
+  const card = e.target.closest('.movie-card');
+  if (card) {
+    const id = Number(card.dataset.id);
+    const movie = movies.find(m => m.id === id);
+    if (movie) openDetailModal(movie);
   }
-  render();
 });
 
 /* ============================================================
@@ -407,7 +459,15 @@ document.getElementById('sortRating').addEventListener('click', () => {
 /* ============================================================
    Init
    ============================================================ */
+function buildGenreCheckboxes() {
+  const container = document.getElementById('genreCheckboxes');
+  container.innerHTML = GENRES.map(g =>
+    `<label class="genre-check-item"><input type="checkbox" name="genre" value="${escapeAttr(g)}"> ${escapeHTML(g)}</label>`
+  ).join('');
+}
+
 async function initApp() {
+  buildGenreCheckboxes();
   const { data, error } = await fetchMovies();
   if (error) {
     console.error('데이터 로드 오류:', error.message);

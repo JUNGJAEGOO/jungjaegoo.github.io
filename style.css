@@ -218,6 +218,7 @@ input, select, textarea {
   transition: transform var(--transition), box-shadow var(--transition);
   display: flex;
   flex-direction: column;
+  cursor: pointer;
 }
 
 .movie-card:hover {
@@ -289,6 +290,12 @@ input, select, textarea {
   font-style: italic;
 }
 
+.card-genres {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
 .card-genre {
   display: inline-block;
   background: var(--bg-header);
@@ -315,14 +322,6 @@ input, select, textarea {
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-}
-
-.card-review {
-  font-size: 0.87rem;
-  color: var(--text-muted);
-  line-height: 1.55;
-  font-style: italic;
-  flex: 1;
 }
 
 .card-footer {
@@ -544,6 +543,45 @@ input, select, textarea {
   transform: scale(1.15);
 }
 
+/* --- Genre Checkboxes --- */
+.genre-checkboxes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 0.25rem 0;
+}
+
+.genre-check-item {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border: 1.5px solid var(--border);
+  border-radius: 999px;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  background: var(--bg-page);
+  font-family: 'Georgia', serif;
+  transition: all var(--transition);
+  user-select: none;
+}
+
+.genre-check-item input[type="checkbox"] {
+  display: none;
+}
+
+.genre-check-item:hover {
+  border-color: var(--accent-light);
+  color: var(--accent-dark);
+}
+
+.genre-check-item:has(input:checked) {
+  background: var(--accent-dark);
+  border-color: var(--accent-dark);
+  color: #fff;
+  font-weight: 600;
+}
+
 /* --- Form Error & Actions --- */
 .form-error {
   color: #b84040;
@@ -557,6 +595,96 @@ input, select, textarea {
   gap: 0.75rem;
   justify-content: flex-end;
   margin-top: 0.25rem;
+}
+
+/* ---------- Detail Modal ---------- */
+.modal-detail {
+  max-width: 460px;
+}
+
+.detail-body {
+  padding: 1.25rem 1.5rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.detail-poster-wrap {
+  display: flex;
+  justify-content: center;
+}
+
+.detail-poster {
+  max-height: 280px;
+  max-width: 100%;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  box-shadow: 0 4px 16px var(--shadow);
+}
+
+.detail-poster-placeholder {
+  height: 100px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-header);
+  border-radius: var(--radius-sm);
+  font-size: 2.5rem;
+  color: var(--text-light);
+}
+
+.detail-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.detail-genres {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.detail-meta {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.detail-stars {
+  font-size: 1.4rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  letter-spacing: 0.05em;
+}
+
+.detail-stars .s-on  { color: var(--star-on); }
+.detail-stars .s-off { color: var(--star-off); }
+.detail-stars .s-half {
+  background: linear-gradient(to right, var(--star-on) 50%, var(--star-off) 50%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.detail-rating-num {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  font-style: italic;
+  -webkit-text-fill-color: var(--text-muted);
+}
+
+.detail-review {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  line-height: 1.7;
+  font-style: italic;
+  border-left: 3px solid var(--accent-light);
+  padding-left: 0.85rem;
 }
 
 /* ---------- Footer ---------- */

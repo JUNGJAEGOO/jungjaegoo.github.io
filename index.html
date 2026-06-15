@@ -61,34 +61,14 @@
           <input type="text" id="titleInput" placeholder="예: 기생충" required />
         </div>
 
-        <div class="form-row">
-          <div class="form-group">
-            <label for="yearInput">연도 <span class="req">*</span></label>
-            <input type="number" id="yearInput" placeholder="2024" min="1888" max="2099" required />
-          </div>
-          <div class="form-group">
-            <label for="genreInput">장르 <span class="req">*</span></label>
-            <select id="genreInput" required>
-              <option value="">장르 선택</option>
-              <option>드라마</option>
-              <option>코미디</option>
-              <option>음악</option>
-              <option>스릴러</option>
-              <option>호러</option>
-              <option>히어로</option>
-              <option>로맨스</option>
-              <option>액션</option>
-              <option>SF</option>
-              <option>애니메이션</option>
-              <option>다큐멘터리</option>
-              <option>미스터리</option>
-              <option>판타지</option>
-              <option>추리</option>
-              <option>역사</option>
-              <option>전기영화</option>
-              <option>기타</option>
-            </select>
-          </div>
+        <div class="form-group">
+          <label for="yearInput">연도 <span class="req">*</span></label>
+          <input type="number" id="yearInput" placeholder="2024" min="1888" max="2099" required />
+        </div>
+
+        <div class="form-group">
+          <label>장르 <span class="req">*</span> <span class="optional">(복수 선택 가능)</span></label>
+          <div class="genre-checkboxes" id="genreCheckboxes"></div>
         </div>
 
         <div class="form-group">
@@ -120,6 +100,17 @@
           <button type="submit" class="btn-primary">저장</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- Detail Modal -->
+  <div class="modal-overlay" id="detailOverlay">
+    <div class="modal modal-detail">
+      <div class="modal-header">
+        <h2 id="detailTitle"></h2>
+        <button class="modal-close" id="closeDetailBtn" aria-label="Close">&times;</button>
+      </div>
+      <div class="detail-body" id="detailBody"></div>
     </div>
   </div>
 
