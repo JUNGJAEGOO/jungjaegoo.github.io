@@ -216,6 +216,8 @@ function closeModal() {
 openFormBtn.addEventListener('click', openModal);
 closeFormBtn.addEventListener('click', closeModal);
 cancelFormBtn.addEventListener('click', closeModal);
+modalOverlay.addEventListener('click', e => { if (e.target === modalOverlay) closeModal(); });
+detailOverlay.addEventListener('click', e => { if (e.target === detailOverlay) closeDetailModal(); });
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
     if (modalOverlay.classList.contains('open')) closeModal();
