@@ -172,6 +172,7 @@ function renderFilterChips() {
 function render() {
   renderFilterChips();
   renderGrid();
+  document.getElementById('movieCount').textContent = `현재 ${movies.length}개의 영화 평가함`;
 }
 
 /* ============================================================
