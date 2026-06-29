@@ -82,6 +82,7 @@ input, select, textarea {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  flex-shrink: 0;
 }
 
 .header-icon {
@@ -381,6 +382,8 @@ input, select, textarea {
   font-family: 'Georgia', serif;
   letter-spacing: 0.02em;
   transition: background var(--transition), transform var(--transition);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .btn-primary:hover {
