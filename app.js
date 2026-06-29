@@ -288,7 +288,6 @@ movieForm.addEventListener('submit', async e => {
   if (!year || year < 1888 || year > 2099) return showError('올바른 연도를 입력해주세요 (1888–2099).');
   if (!genre)                              return showError('장르를 하나 이상 선택해주세요.');
   if (rating < 0.5 || rating > 5)         return showError('별점을 선택해주세요.');
-  if (!review)                             return showError('한줄평을 입력해주세요.');
 
   const submitBtn = movieForm.querySelector('[type="submit"]');
   submitBtn.disabled = true;
