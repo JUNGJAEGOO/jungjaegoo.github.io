@@ -354,7 +354,7 @@ function openDetailModal(movie) {
         ${renderStars(movie.rating)}
         <span class="detail-rating-num">${movie.rating}</span>
       </div>
-      <p class="detail-review">&ldquo;${escapeHTML(movie.review)}&rdquo;</p>
+      ${movie.review ? `<p class="detail-review">&ldquo;${escapeHTML(movie.review)}&rdquo;</p>` : ''}
     </div>
   `;
 
